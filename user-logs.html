@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Information</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+        body{background:#f5f7fa;padding:20px}
+        .container{max-width:1200px;margin:0 auto;background:white;padding:25px;border-radius:12px}
+        h2{text-align:center;color:#2c3e50;margin-bottom:20px}
+        
+        .export-btn{
+            display:block;
+            width:220px;
+            margin:0 auto 20px;
+            padding:12px;
+            background:#27ae60;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:15px;
+        }
+        
+        table{width:100%;border-collapse:collapse;margin-top:10px}
+        th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd}
+        th{background:#f8f9fa}
+        
+        .delete-btn{
+            background:#e74c3c;
+            color:white;
+            border:none;
+            padding:6px 10px;
+            border-radius:4px;
+            cursor:pointer;
+            font-size:12px;
+        }
+        
+        .empty{text-align:center;padding:30px;color:#666}
+        .back{margin:20px auto;display:block;width:150px;padding:10px;background:#3498db;color:white;text-align:center;border-radius:6px;text-decoration:none}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>All Customer Information</h2>
+        <button class="export-btn" onclick="exportCSV()">Export Customer Data (CSV)</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Student ID</th>
+                    <th>WeChat</th>
+                    <th>Password</th>
+                    <th>Grade</th>
+                    <th>Major</th>
+                    <th>Skill Level</th>
+                    <th>Skills Offer</th>
+                    <th>Skills Learn</th>
+                    <th>Register Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+        
+        <div class="empty" id="empty">No customer data yet</div>
+        <a href="index.html" class="back">Back to Login</a>
+    </div>
+
+    <script>
+        window.onload = function() {
+            renderTable();
+        };
+
+        // 渲染客户列表
+        function renderTable() {
+            const customers = JSON.parse(localStorage.getItem('customers')) || [];
+            const body = document.getElementById('tableBody');
+            const empty = document.getElementById('empty');
+
+            if (customers.length === 0) {
+                empty.style.display = 'block';
+                body.innerHTML = '';
+                return;
+            }
+
+            empty.style.display = 'none';
+            body.innerHTML = customers.map((c, index) => `
+                <tr>
+                    <td>${c.fullName || '-'}</td>
+                    <td>${c.studentID || '-'}</td>
+                    <td>${c.weChat || '-'}</td>
+                    <td>${c.password || '-'}</td>
+                    <td>${c.grade || '-'}</td>
+                    <td>${c.major || '-'}</td>
+                    <td>${c.skillLevel || '-'}</td>
+                    <td>${c.offerSkills || '-'}</td>
+                    <td>${c.learnSkills || '-'}</td>
+                    <td>${c.registerTime || '-'}</td>
+                    <td><button class="delete-btn" onclick="deleteCustomer(${index})">Delete</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // 删除客户 + 自动永久保存
+        function deleteCustomer(index) {
+            if (!confirm('Are you sure you want to delete this customer?')) return;
+            
+            let customers = JSON.parse(localStorage.getItem('customers')) || [];
+            customers.splice(index, 1); // 删除
+            localStorage.setItem('customers', JSON.stringify(customers)); // 永久保存
+            renderTable();
+            alert('Customer deleted & saved successfully!');
+        }
+
+        // 导出 CSV
+        function exportCSV() {
+            const customers = JSON.parse(localStorage.getItem('customers')) || [];
+            if (customers.length === 0) {
+                alert('No customer data to export!');
+                return;
+            }
+
+            const headers = [
+                'Full Name','Student ID','WeChat','Password','Grade','Major',
+                'Skill Level','Skills Offer','Skills Learn','Register Time'
+            ];
+
+            let csv = headers.join(',') + '\n';
+            customers.forEach(c => {
+                const row = [
+                    `"${c.fullName || ''}"`,
+                    `"${c.studentID || ''}"`,
+                    `"${c.weChat || ''}"`,
+                    `"${c.password || ''}"`,
+                    `"${c.grade || ''}"`,
+                    `"${c.major || ''}"`,
+                    `"${c.skillLevel || ''}"`,
+                    `"${c.offerSkills || ''}"`,
+                    `"${c.learnSkills || ''}"`,
+                    `"${c.registerTime || ''}"`
+                ];
+                csv += row.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'SkillNest_Customers.csv';
+            a.click();
+        }
+    </script>
+</body>
+</html>

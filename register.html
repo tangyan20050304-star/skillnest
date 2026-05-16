@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SkillNest - Register</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+        body{background:#f5f7fa;padding:20px}
+        .box{max-width:500px;margin:0 auto;background:white;padding:30px;border-radius:12px}
+        h2{text-align:center;color:#2c3e50;margin-bottom:20px}
+        .input{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:6px}
+        select{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:6px}
+        .btn{width:100%;padding:12px;background:#2ecc71;color:white;border:none;border-radius:6px;margin-top:10px;cursor:pointer}
+        label{font-size:14px;color:#34495e}
+        .success{text-align:center;margin-top:15px;color:#2ecc71;display:none}
+        .error{text-align:center;margin-top:15px;color:#e74c3c;display:none}
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Customer Registration</h2>
+        <input class="input" id="fullName" placeholder="Full Name">
+        <input class="input" id="studentID" placeholder="Student ID">
+        <input class="input" id="weChat" placeholder="WeChat">
+        <input class="input" type="password" id="password" placeholder="Password">
+
+        <label>Grade</label>
+        <select id="grade">
+            <option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option><option>Postgraduate</option>
+        </select>
+
+        <label>Major</label>
+        <input class="input" id="major" placeholder="Enter your major">
+
+        <label>Skill Level</label>
+        <select id="skillLevel">
+            <option>Beginner</option><option>Intermediate</option><option>Advanced</option>
+        </select>
+
+        <input class="input" id="offerSkills" placeholder="Skills I can offer">
+        <input class="input" id="learnSkills" placeholder="Skills I want to learn">
+
+        <button class="btn" onclick="register()">Register</button>
+        <div class="success" id="successMsg">Registration successful! Redirecting to login...</div>
+        <div class="error" id="errorMsg">Please fill in all fields!</div>
+    </div>
+
+    <script>
+        function register() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const studentID = document.getElementById('studentID').value.trim();
+            const weChat = document.getElementById('weChat').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const grade = document.getElementById('grade').value;
+            const major = document.getElementById('major').value.trim();
+            const skillLevel = document.getElementById('skillLevel').value;
+            const offerSkills = document.getElementById('offerSkills').value.trim();
+            const learnSkills = document.getElementById('learnSkills').value.trim();
+
+            if (!fullName || !studentID || !password) {
+                document.getElementById('errorMsg').style.display = 'block';
+                setTimeout(()=>document.getElementById('errorMsg').style.display='none',2000);
+                return;
+            }
+
+            const user = {
+                fullName, studentID, weChat, password, grade, major, skillLevel, offerSkills, learnSkills,
+                registerTime: new Date().toLocaleString()
+            };
+
+            let customers = JSON.parse(localStorage.getItem('customers')) || [];
+            const exist = customers.some(c => c.studentID === studentID);
+            if (exist) {
+                document.getElementById('errorMsg').innerText = 'This student ID is already registered!';
+                document.getElementById('errorMsg').style.display = 'block';
+                setTimeout(()=>document.getElementById('errorMsg').style.display='none',2000);
+                return;
+            }
+
+            customers.push(user);
+            localStorage.setItem('customers', JSON.stringify(customers));
+
+            document.getElementById('successMsg').style.display = 'block';
+            setTimeout(()=>window.location.href='index.html',2000);
+        }
+    </script>
+</body>
+</html>

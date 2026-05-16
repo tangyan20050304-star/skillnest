@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SkillNest - Login</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+        body{background:#f5f7fa;padding:40px}
+        .box{max-width:500px;margin:0 auto;background:white;padding:30px;border-radius:12px;box-shadow:0 0 10px #00000010}
+        h2{text-align:center;color:#2c3e50;margin-bottom:30px}
+        
+        .role-buttons{
+            display:flex;
+            gap:15px;
+            margin-bottom:25px;
+        }
+        .role-btn{
+            flex:1;
+            padding:15px;
+            border:none;
+            border-radius:8px;
+            font-size:16px;
+            cursor:pointer;
+            color:white;
+        }
+        .btn-staff-choose{background:#2c3e50}
+        .btn-customer-choose{background:#3498db}
+
+        .login-form{display:none;margin-top:20px}
+        .input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:6px}
+        .login-btn{width:100%;padding:12px;border:none;border-radius:6px;margin-top:10px;color:white;cursor:pointer}
+        .btn-staff-login{background:#2c3e50}
+        .btn-customer-login{background:#3498db}
+
+        /* 返回按钮 */
+        .back-btn{
+            width:100%;
+            padding:10px;
+            margin-top:10px;
+            background:#95a5a6;
+            color:white;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+        }
+
+        .tip{text-align:center;margin-top:20px;color:#666}
+        .msg-success{text-align:center;margin-top:15px;color:#2ecc71;display:none}
+        .msg-error{text-align:center;margin-top:15px;color:#e74c3c;display:none}
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Welcome to SkillNest</h2>
+
+        <!-- 身份选择 -->
+        <div class="role-buttons" id="roleSelect">
+            <button class="role-btn btn-staff-choose" onclick="showStaffLogin()">I am Staff</button>
+            <button class="role-btn btn-customer-choose" onclick="showCustomerLogin()">I am Customer</button>
+        </div>
+
+        <!-- Staff 登录 -->
+        <div class="login-form" id="staffLoginForm">
+            <h3 style="text-align:center; margin-bottom:15px;">Staff Login</h3>
+            <input class="input" type="text" id="staffUser" placeholder="Username">
+            <input class="input" type="password" id="staffPwd" placeholder="Password">
+            <button class="login-btn btn-staff-login" onclick="staffLogin()">Login</button>
+            <button class="back-btn" onclick="goBack()">Back to Role Selection</button>
+        </div>
+
+        <!-- Customer 登录 -->
+        <div class="login-form" id="customerLoginForm">
+            <h3 style="text-align:center; margin-bottom:15px;">Customer Login</h3>
+            <input class="input" type="text" id="custID" placeholder="Student ID">
+            <input class="input" type="password" id="custPwd" placeholder="Password">
+            <button class="login-btn btn-customer-login" onclick="customerLogin()">Login</button>
+            <button class="back-btn" onclick="goBack()">Back to Role Selection</button>
+        </div>
+
+        <div class="msg-success" id="successMsg">Login successful!</div>
+        <div class="msg-error" id="errorMsg">Incorrect credentials!</div>
+        <div class="tip">New customer? <a href="register.html">Register here</a></div>
+    </div>
+
+    <script>
+        // 显示员工登录
+        function showStaffLogin() {
+            document.getElementById('roleSelect').style.display = 'none';
+            document.getElementById('staffLoginForm').style.display = 'block';
+            document.getElementById('customerLoginForm').style.display = 'none';
+        }
+
+        // 显示客户登录
+        function showCustomerLogin() {
+            document.getElementById('roleSelect').style.display = 'none';
+            document.getElementById('customerLoginForm').style.display = 'block';
+            document.getElementById('staffLoginForm').style.display = 'none';
+        }
+
+        // 返回重新选择身份
+        function goBack() {
+            document.getElementById('roleSelect').style.display = 'flex';
+            document.getElementById('staffLoginForm').style.display = 'none';
+            document.getElementById('customerLoginForm').style.display = 'none';
+        }
+
+        // 员工登录
+        function staffLogin() {
+            const username = document.getElementById('staffUser').value;
+            const password = document.getElementById('staffPwd').value;
+            if (username === 'Skillnest' && password === 'Service Leadership') {
+                window.location.href = 'user-logs.html';
+            } else {
+                showError('Invalid staff username or password!');
+            }
+        }
+
+        // 客户登录
+        function customerLogin() {
+            const id = document.getElementById('custID').value;
+            const pwd = document.getElementById('custPwd').value;
+            const users = JSON.parse(localStorage.getItem('customers')) || [];
+            const user = users.find(u => u.studentID === id && u.password === pwd);
+            
+            if (user) {
+                showSuccess('Customer login successful!');
+            } else {
+                showError('Student ID or password incorrect!');
+            }
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.innerText = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 2500);
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.innerText = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 2500);
+        }
+    </script>
+</body>
+</html>
